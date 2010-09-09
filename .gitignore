@@ -1,0 +1,6 @@
+_ReSharper.*
+bin
+obj
+net-ssh-2.0.11
+*.user
+*.suo
