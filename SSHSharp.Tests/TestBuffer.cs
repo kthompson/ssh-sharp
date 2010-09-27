@@ -354,8 +354,8 @@ namespace SSHSharp.Tests
         public void WriteBoolShouldWriteArgumentsAs1ByteBooleanValuesToEndOfBuffer()
         {
             var buffer = new Buffer("start");
-            buffer.WriteBool(null, false, true, 1, new Object());
-            Assert.AreEqual("start\0\0\x1\x1\x1", buffer.ToString());
+            buffer.WriteBool(null, false, true, 1);
+            Assert.AreEqual("start\0\0\x1\x1", buffer.ToString());
         }
 
         [Test]
@@ -424,6 +424,7 @@ namespace SSHSharp.Tests
             Assert.AreEqual(n3, key.G);
             Assert.AreEqual(n4, key.X);
         }
+
         private static void RandomRsa(Func<Buffer, Key> yield)
         {
             var n1 = RandomBigNum();

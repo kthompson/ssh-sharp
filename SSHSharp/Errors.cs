@@ -78,6 +78,11 @@ namespace SSHSharp
     /// </summary>
     public class HostKeyMismatchException : Exception
     {
+        public HostKeyMismatchException(string message)
+            : base(message)
+        {
+        }
+
         /// <summary>
         /// The callback to use when RememberHost is called
         /// </summary>
@@ -143,7 +148,7 @@ namespace SSHSharp
         /// <summary>
         /// Returns the key itself, as reported by the remote host.
         /// </summary>
-        public HostKey Key
+        public Key Key
         {
             get
             {

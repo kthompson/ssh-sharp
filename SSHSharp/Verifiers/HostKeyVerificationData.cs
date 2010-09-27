@@ -6,7 +6,7 @@ namespace SSHSharp.Verifiers
     {
         public string Fingerprint { get; set; }
         public PeerInfo Peer { get; set; }
-        public HostKey Key { get; set; }
+        public Key Key { get; set; }
         public Session Session { get; set; }
     }
 }

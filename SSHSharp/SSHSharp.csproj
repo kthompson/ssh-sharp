@@ -73,13 +73,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Authentication\Pageant\Socket.cs" />
     <Compile Include="Buffer.cs" />
     <Compile Include="Connection\Channel.cs" />
     <Compile Include="Connection\Session.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="HostKey.cs" />
     <Compile Include="Key.cs" />
+    <Compile Include="KnownHosts.cs" />
+    <Compile Include="StringScanner.cs" />
+    <Compile Include="Transport\Algorithms.cs" />
+    <Compile Include="Transport\Kex\DiffieHellmanGroup1SHA1.cs" />
+    <Compile Include="Transport\ServerVersion.cs" />
+    <Compile Include="Transport\SessionOptions.cs" />
     <Compile Include="Verifiers\HostKeyVerificationData.cs" />
     <Compile Include="IncompleteAttribute.cs" />
     <Compile Include="PeerInfo.cs" />
@@ -91,6 +97,7 @@
     <Compile Include="Verifiers\Lenient.cs" />
     <Compile Include="Verifiers\Null.cs" />
     <Compile Include="Verifiers\Strict.cs" />
+    <Compile Include="Version.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Authentication\Methods\" />
