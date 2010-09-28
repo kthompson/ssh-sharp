@@ -95,6 +95,7 @@ namespace SSHSharp
 
         #endregion
 
+
         /// <summary>
         /// Returns a copy of the buffer's content.
         /// </summary>

@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using SSHSharp.Verifiers;
 
 namespace SSHSharp.Transport
@@ -57,6 +61,11 @@ namespace SSHSharp.Transport
         public SessionOptions Options { get; set; }
 
         /// <summary>
+        /// The Algorithms instance used to perform key exchanges.
+        /// </summary>
+        public Algorithms Algorithms { get; private set; }
+
+        /// <summary>
         /// Instantiates a new transport layer abstraction. This will block until
         /// the initial key exchange completes, leaving you with a ready-to-use
         /// transport session.
@@ -76,15 +85,105 @@ namespace SSHSharp.Transport
         /// <param name="options"></param>
         public Session(string host, SessionOptions options)
         {
-                
+            this.Host = host;
+            this.Port = options.Port ?? DefaultPort;
+
+            this.Options = options;
+
+            Trace.TraceWarning("establishing connection to {0}:{1}", this.Host, this.Port);
+            var factory = options.Proxy ?? ConnectFactory;
+
+            if(options.Timeout != null)
+                throw new NotSupportedException("Timeout is not currently supported");
+
+            var socket = Timeout.Wait(options.Timeout ?? 0, () => factory(this.Host, this.Port));
+
+            Trace.TraceInformation("Connection established.");
+
+            this.HostKeyVerifier = SelectHostKeyVerifier(options.Paranoid);
+
+            this.ServerVersion = new ServerVersion(socket);
+            
+            this.Algorithms = new Algorithms(this, options);
+
+            Wait(() => this.Algorithms.IsInitialized);
+        }
+
+        private static PacketStream ConnectFactory(string host, int port)
+        {
+            var c = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            c.Connect(host, port);
+            return new PacketStream(c, true);
+        }
+
+        /// <summary>
+        /// Waits (blocks) until the given block returns true. If no block is given,
+        /// this just waits long enough to see if there are any pending packets. Any
+        /// packets read are enqueued (see #push).
+        /// </summary>
+        /// <param name="func"></param>
+        private void Wait(Func<bool> func)
+        {
+            while (true)
+            {
+                if (func != null && func())
+                    break;
+
+                var message = PollMessage("nonblock", false);
+                if (message != null)
+                    Push(message);
+
+                if(func == null)
+                    break;
+            }
+        }
+
+        private void Push(object message)
+        {
+            throw new NotImplementedException();
+        }
+
+        private object PollMessage(string nonblock, bool b)
+        {
+            throw new NotImplementedException();
         }
 
         public PeerInfo Peer { get; set; }
 
-
+        private string _hostAsString;
+        /// <summary>
+        /// Returns the host (and possibly IP address) in a format compatible with
+        /// SSH known-host files.
+        /// </summary>
+        /// <returns></returns>
         public string HostAsString()
         {
-            throw new NotImplementedException();
+            if (_hostAsString != null)
+                return _hostAsString;
+
+            var s = this.Host;
+            if (this.Port != DefaultPort)
+                s = string.Format("[{0}]:{1}", s, this.Port);
+
+            // if socket.peer_ip != host
+            if (this.Peer.IPAddress.ToString() != this.Host)
+            {
+                var s2 = this.Peer.IPAddress.ToString();
+                if (this.Port != DefaultPort)
+                    s2 = string.Format("[{0}]:{1}", s2, this.Port);
+
+                return s + "," + s2;
+            }
+
+            return s;
+        }
+
+        /// <summary>
+        /// Returns true if the underlying socket has been closed.
+        /// </summary>
+        public bool IsClosed
+        {
+            get { return this.Socket.CanRead || this.Socket.CanWrite; }
         }
 
         /// <summary>

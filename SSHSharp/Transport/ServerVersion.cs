@@ -38,7 +38,7 @@ namespace SSHSharp.Transport
         /// Instantiates a new ServerVersion and immediately (and synchronously)
         /// negotiates the SSH protocol in effect, using the given socket.
         /// </summary>
-        public ServerVersion(NetworkStream socket)
+        public ServerVersion(Stream socket)
         {
             this.Header = string.Empty;
             this.Version = null;
@@ -50,7 +50,7 @@ namespace SSHSharp.Transport
         /// reports an incompatible SSH version (e.g., SSH1), this will raise an
         /// exception.
         /// </summary>
-        private void Negotiate(NetworkStream socket)
+        private void Negotiate(Stream socket)
         {
             Trace.TraceInformation("negotiating protocol version");
             var sb = new StringBuilder();

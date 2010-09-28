@@ -9,6 +9,11 @@ namespace SSHSharp
 {
     public static class Extensions
     {
+        public static RawString Rawify(this string value)
+        {
+            return new RawString(value);
+        }
+
         public static void Times(this int i, Action action)
         {
             var count = i;

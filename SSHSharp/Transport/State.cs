@@ -5,13 +5,17 @@ using System.Text;
 
 namespace SSHSharp.Transport
 {
-    public class Algorithms
+    public class State
     {
-        public Algorithms(Session session, SessionOptions options)
+        public State(PacketStream stream, StateMode mode)
         {
             throw new NotImplementedException();
         }
+    }
 
-        public bool IsInitialized { get; private set; }
+    public enum StateMode
+    {
+        Client,
+        Server,
     }
 }
